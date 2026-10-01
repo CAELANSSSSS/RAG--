@@ -1,0 +1,969 @@
+html, body {
+  font-family: "Roboto", sans-serif; /* 預設字體為 Roboto，備選 sans-serif */
+  height: 100%; /* 設置網頁和 body 高度為 100% */
+  margin: 0px; /* 移除 margin */
+  overflow: hidden; /* 隱藏滾動條 */
+  padding: 0px; /* 移除 padding */
+  width: 100%; /* 設置寬度為 100% */
+  position: relative; /* 添加相對定位 */
+  min-height: 100vh; /* 確保最小高度為視窗高度 */
+}
+
+.invisible {
+  opacity: 0; /* 將元素完全隱藏，但保留其佔位 */
+}
+
+/* 滾動條樣式 */
+.scroll-bar::-webkit-scrollbar {
+  background-color: #c8c8c8; /* 滾動條背景顏色 */
+  width: 2px; /* 滾動條寬度 */
+}
+
+.scroll-bar::-webkit-scrollbar-thumb {
+  background-color: #5a5a5a; /* 滾動條滑塊顏色 */
+}
+
+/* 聊天區塊的設置 */
+#chat-wrapper {
+  background-color: white; /* 背景顏色為白色 */
+  height: 100%; /* 設置區塊高度為 100% */
+  overflow: hidden; /* 隱藏滾動條 */
+  width: 100%; /* 設置寬度為 100% */
+  max-width: 100vw;
+  overflow-x: hidden;
+  min-height: 100vh; /* 確保最小高度為視窗高度 */
+  position: relative; /* 相對定位 */
+  z-index: 1; /* 內容層級 */
+}
+
+/* 機器人的情緒狀態展示區塊 */
+#chat-wrapper #chat-bot-mood {
+  left: 0px; /* 設置區塊距離左邊 0px */
+  padding: 20px; /* 設置 20px 的內邊距 */
+  position: absolute; /* 使用絕對定位 */
+  top: 0px; /* 設置區塊距離頂部 0px */
+  white-space: nowrap; /* 禁止文字換行 */
+  z-index: 10; /* 設置 z-index 為 10，保證其疊加在其他元素上方 */
+}
+
+
+#chat-bot-mood-icon{
+  background-image: url('S__66658339.jpg');
+    background-size: cover; /* 让图片覆盖整个元素 */
+    background-position: center; /* 将图片居中对齐 */
+    background-repeat: no-repeat; /* 防止图片重复 */
+}
+
+
+
+  #chat-wrapper #chat-bot-mood.friendly #chat-bot-mood-label #chat-bot-mood-value {
+    color: #03a9f4; /* 設置機器人在「友好」狀態下，情緒值的顏色為 #03a9f4（亮藍色） */
+  }
+  
+
+
+
+  #chat-wrapper #chat-bot-mood #chat-bot-mood-icon {
+    border-radius: 30px; /* 設置圓角為 30px，使圖標圓潤 */
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px; /* 設置圖標的陰影效果 */
+    display: inline-block; /* 設置為行內塊級元素，使其可以與其他元素排在同一行 */
+    height: 30px; /* 設置圖標高度為 30px */
+    margin-left: 10px; /* 設置圖標左邊距為 10px */
+    vertical-align: top; /* 垂直對齊到頂部 */
+    width: 30px; /* 設置圖標寬度為 30px */
+  }
+  
+  #chat-wrapper #chat-bot-mood #chat-bot-mood-label {
+    background-color: white; /* 設置情緒標籤的背景色為白色 */
+    border-radius: 20px; /* 設置圓角為 20px，使標籤圓潤 */
+    box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px; /* 設置標籤的陰影效果 */
+    display: inline-block; /* 設置為行內塊級元素，使其可以與其他元素排在同一行 */
+    
+    margin-left: 5px; /* 設置標籤左邊距為 5px */
+    padding: 5px 15px; /* 設置標籤內邊距為 5px 上下、15px 左右 */
+    vertical-align: top; /* 垂直對齊到頂部 */
+  }
+  
+  #chat-wrapper #chat-bot-mood #chat-bot-mood-label h1 {
+    display: inline-block; /* 設置為行內塊級元素，使其可以與其他元素排在同一行 */
+    font-size: 0.9em; /* 設置字體大小為 0.9em */
+    font-weight: 300; /* 設置字體粗細為 300，較細 */
+    height: 20px; /* 設置字體的高度為 20px */
+    line-height: 20px; /* 設置行高為 20px */
+    margin: 0px; /* 設置外邊距為 0px */
+    vertical-align: top; /* 垂直對齊到頂部 */
+  }
+  
+  #chat-wrapper #chat-bot-mood #chat-bot-mood-label #chat-bot-mood-text {
+    color: #3c3c3c; /* 設置情緒文本的顏色為深灰色 */
+  }
+  
+#chat-wrapper #letter-pool, #chat-wrapper #temp-letter-pool {
+  backface-visibility: hidden;
+  height: 100vh; /* 使用視窗高度單位 */
+  width: 100vw; /* 使用視窗寬度單位 */
+  position: fixed; /* 改為固定定位 */
+  left: 0;
+  top: 0;
+  z-index: -1; /* 背景置於內容後方 */
+  overflow: hidden;
+  user-select: none;
+  min-width: 320px; /* 添加最小寬度 */
+  transform: translateZ(0); /* 啟用硬體加速 */
+  will-change: transform; /* 優化動畫性能 */
+  background-size: cover; /* 確保背景覆蓋整個容器 */
+  background-position: center center; /* 背景居中 */
+}
+#chat-wrapper #letter-pool .pool-letter, #chat-wrapper #letter-pool .temp-letter, #chat-wrapper #temp-letter-pool .pool-letter, #chat-wrapper #temp-letter-pool .temp-letter {
+  color: #d2d2d2; /* 设置字母颜色为浅灰色 */
+  display: inline-block; /* 将元素设为内联块状，允许水平排列且保持块级元素特性 */
+  font-weight: 300; /* 设置字体的粗细为 300，较为细 */
+  position: absolute; /* 绝对定位，允许精确地放置字母 */
+}
+#chat-wrapper #letter-overlay {
+  height: 100vh; /* 使用視窗高度單位 */
+  width: 100vw; /* 使用視窗寬度單位 */
+  position: fixed; /* 改為固定定位 */
+  left: 0;
+  top: 0;
+  pointer-events: none;
+  z-index: 3; /* 確保在適當的層級 */
+  min-width: 320px; /* 添加最小寬度 */
+  transform: translateZ(0); /* 啟用硬體加速 */
+  will-change: transform; /* 優化動畫性能 */
+  background-size: cover; /* 確保背景覆蓋整個區域 */
+  background-position: center center; /* 背景居中 */
+}
+
+#chat-wrapper #letter-overlay .overlay-letter {
+  color: #d2d2d2; /* 設定文字顏色為 #d2d2d2（灰色調） */
+  font-weight: 300; /* 設定字體的粗細為 300（較細） */
+  position: absolute; /* 設定為絕對定位 */
+  transition: all 1.5s, opacity 0.5s; /* 設定所有屬性的過渡時間為 1.5 秒，opacity 的過渡時間為 0.5 秒 */
+  transition-timing-function: ease-in-out; /* 設定過渡效果為 ease-in-out 緩動效果 */
+}
+
+#chat-wrapper #letter-overlay .overlay-letter.in-flight {
+  animation: pulse-letter 1s ease-in-out; /* 設定動畫效果為 pulse-letter，持續時間為 1 秒，且使用 ease-in-out 緩動效果 */
+  color: #d2d2d2; /* 設定文字顏色為 #d2d2d2（灰色調） */
+}
+
+#chat-wrapper #chat-message-window {
+  height: 100%; /* 設定高度為 100% */
+  left: 0px; /* 設定元素左側距離為 0 像素 */
+  min-width: 0; /* 移除最小寬度限制，允許在更小螢幕上縮放 */
+  overflow: hidden; /* 隱藏超出範圍的內容 */
+  position: absolute; /* 設定為絕對定位 */
+  top: 0px; /* 設定元素頂部距離為 0 像素 */
+  width: 100%; /* 設定寬度為 100% */
+  z-index: 2; /* 設定 z-index，控制元素層級 */
+}
+
+
+/* 設置消息輸入區域的樣式 */
+#chat-wrapper #chat-message-window #message-input-wrapper {
+  bottom: 0px; /* 將輸入區域固定在窗口底部 */
+  height: 90px; /* 設置輸入區域高度為 90px */
+  left: 0px; /* 輸入區域靠左對齊 */
+  position: absolute; /* 使用絕對定位 */
+  width: 100%; /* 設置輸入區域寬度為 100% */
+  z-index: 2; /* 設置 z-index，確保輸入區域顯示在其他元素之上 */
+}
+
+/* 設置消息輸入框的樣式 */
+#chat-wrapper #chat-message-window #message-input-wrapper #message-input {
+  left: 50%; /* 水平居中 */
+  position: absolute; /* 使用絕對定位 */
+  top: 50%; /* 垂直居中 */
+  transform: translateX(-50%) translateY(-50%); /* 使輸入框精確居中 */
+  background-color: white; /* 設置背景顏色為白色 */
+  border-radius: 100px; /* 設置圓角，使其呈圓形效果 */
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px; /* 添加陰影效果 */
+  height: 50px; /* 設置輸入框高度為 50px */
+  line-height: 50px; /* 設置行高與高度相等，使文本垂直居中 */
+  overflow: hidden; /* 隱藏溢出的內容 */
+  width: 90%;
+  max-width: 800px;
+}
+
+/* 當輸入框啟用發送狀態時，設置發送按鈕的動畫效果 */
+#chat-wrapper #chat-message-window #message-input-wrapper #message-input.send-enabled #send-message-button:before, 
+#chat-wrapper #chat-message-window #message-input-wrapper #message-input.send-enabled #send-message-button:after {
+  left: 50%; /* 水平居中 */
+  position: absolute; /* 絕對定位 */
+  top: 50%; /* 垂直居中 */
+  transform: translateX(-50%) translateY(-50%); /* 使按鈕精確居中 */
+  animation: pulse 2s ease-in-out infinite; /* 添加 pulsate 動畫效果，2 秒循環一次 */
+  border-radius: 100px; /* 設置圓角效果 */
+  content: ""; /* 生成一個虛擬元素 */
+  height: 30px; /* 設置按鈕高度為 30px */
+  width: 30px; /* 設置按鈕寬度為 30px */
+}
+
+
+/* 當啟用發送狀態時，設置發送按鈕圖標的顏色 */
+#chat-wrapper #chat-message-window #message-input-wrapper #message-input.send-enabled #send-message-button i {
+  color: #03a9f4; /* 設置按鈕圖標顏色為亮藍色 */
+}
+
+/* 設置消息輸入欄中的文字輸入框的樣式 */
+#chat-wrapper #chat-message-window #message-input-wrapper #message-input #message-input-field {
+  border: none; /* 移除邊框 */
+  color: #b4b4b4; /* 設置字體顏色為淺灰色 */
+  font-size: 1em; /* 設置字體大小為 1em */
+  font-weight: 300; /* 設置字體粗細為 300，即細字體 */
+ /* margin-left: 14px;  設置輸入框內文字左邊距為 20px */
+  outline: none; /* 移除輸入框的外框（聚焦時不顯示） */
+  width: calc(100% - 85px); /* 減去按鈕佔用的空間，從70px增加到85px */
+}
+
+/* 設置消息輸入框內的占位符樣式 */
+#chat-wrapper #chat-message-window #message-input-wrapper #message-input #message-input-field::placeholder {
+  color: #b4b4b4; /* 設置占位符字體顏色為淺灰色 */
+}
+
+/* 設置發送按鈕的樣式 */
+#chat-wrapper #chat-message-window #message-input-wrapper #message-input #send-message-button {
+  cursor: pointer; /* 設置鼠標懸停時顯示為手形 */
+  height: 50px; /* 設置發送按鈕的高度為 50px */
+  position: absolute; /* 絕對定位 */
+  right: 0px; /* 將按鈕定位在輸入框的右側 */
+  text-align: center; /* 文字居中對齊 */
+  top: 0px; /* 將按鈕定位在輸入框的頂部 */
+  width: 50px; /* 設置按鈕的寬度為 50px */
+}
+
+/* 設置發送按鈕內的圖標樣式 */
+#chat-wrapper #chat-message-window #message-input-wrapper #message-input #send-message-button i {
+  color: #e6e6e6; /* 設置按鈕圖標顏色為淡灰色 */
+  height: 50px; /* 設置圖標高度與按鈕相同 */
+  line-height: 50px; /* 使圖標垂直居中 */
+  font-size: 2em; /* 設置圖標大小為 2em */
+  transition: all 0.5s; /* 設置過渡效果持續 0.5 秒 */
+  width: 50px; /* 設置圖標寬度與按鈕相同 */
+}
+
+/* 設置聊天消息列的樣式 */
+#chat-wrapper #chat-message-window #chat-message-column-wrapper {
+  bottom: 0px; /* 將消息列固定在視窗底部 */
+  height: 100%; /* 設置消息列高度為 100% */
+  left: 0px; /* 消息列靠左對齊 */
+  overflow: hidden; /* 隱藏超出內容 */
+  position: absolute; /* 絕對定位 */
+  width: 100%; /* 設置消息列寬度為 100% */
+  z-index: 1; /* 設置 z-index 層級，以便控制元素層次 */
+}
+
+/* 設置聊天消息列的樣式 */
+#chat-wrapper #chat-message-window #chat-message-column-wrapper #chat-message-column {
+  bottom: 0px; /* 將消息列固定在視窗底部 */
+  left: 0px; /* 消息列靠左對齊 */
+  min-height: 70px; /* 設置最小高度為 70px */
+  margin-bottom: 70px; /* 底部邊距為 70px */
+  overflow: hidden; /* 隱藏超出內容 */
+  padding: 20px 20px 0px 20px; /* 設置內邊距 */
+  width: 100%;
+  max-width: 100%;
+}
+
+/* 當消息列具有 'static' 類時，設置其樣式 */
+#chat-wrapper #chat-message-window #chat-message-column-wrapper #chat-message-column.static {
+  position: absolute; /* 絕對定位 */
+  width: 97%; /* 設置寬度為 97% */
+  height: 70%; /* 設置消息列的固定高度為 70% */
+  overflow-y: auto; /* 允許垂直滾動 */
+}
+
+/* 設置消息的動畫效果與底部邊距 */
+#chat-wrapper #chat-message-window #chat-message-column-wrapper #chat-message-column .message {
+  animation: expand 0.5s ease-in-out; /* 設置展開動畫，持續 0.5 秒 */
+  margin-bottom: 15px; /* 增加每條消息的底部邊距為15px */
+  white-space: nowrap; /* 不換行，保持單行 */
+}
+
+/* 設置接收到的消息對齊左側 */
+#chat-wrapper #chat-message-window #chat-message-column-wrapper #chat-message-column .message.received {
+  text-align: left; /* 接收的消息左對齊 */
+  margin-bottom: 20px; /* 增加接收消息的底部邊距 */
+}
+
+/* 設置友善消息的間距 */
+#chat-wrapper #chat-message-window #chat-message-column-wrapper #chat-message-column .message.received.friendly {
+  margin-bottom: 25px; /* 特別增加友善消息的底部間距 */
+  margin-top: 10px; /* 添加上方間距 */
+  padding-bottom: 5px; /* 內部底部間距 */
+}
+
+/* 設置友善消息的圖標背景漸變色 */
+#chat-wrapper #chat-message-window #chat-message-column-wrapper #chat-message-column .message.received.friendly .profile-icon {
+  background: linear-gradient(to right, #03a9f4, #4caf50); /* 從藍色漸變到綠色 */
+}
+
+/* 設置接收消息的圖標內的樣式 */
+#chat-message-column .message.received .profile-icon i {
+  border-radius: 30px; /* 設置圖標圓角半徑為 30px */
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px; /* 設置陰影效果 */
+  background-image: url('S__66658339.jpg'); /* 設置背景圖片 */
+  background-size: cover; /* 背景圖片覆蓋整個元素 */
+  background-position: center; /* 背景圖片居中 */
+  background-repeat: no-repeat; /* 背景圖片不重複 */
+}
+
+
+
+
+/* 接收消息的內容動畫和樣式 */
+#chat-wrapper #chat-message-window #chat-message-column-wrapper #chat-message-column .message.received .content {
+  animation: bounceInLeft 1s ease-in-out; /* 從左側彈入的動畫，持續 1 秒 */
+  animation-delay: 0.5s; /* 延遲 0.5 秒後開始動畫 */
+  margin-left: 20px; /* 左邊距為 20px */
+}
+
+/* 送出消息的樣式，文字靠右對齊 */
+#chat-wrapper #chat-message-window #chat-message-column-wrapper #chat-message-column .message.sent {
+  text-align: right; /* 送出消息右對齊 */
+  margin-bottom: 20px; /* 增加發送消息的底部邊距 */
+  margin-top: 5px; /* 增加上方間距 */
+}
+
+/* 送出消息的圖標背景漸變色 */
+#chat-wrapper #chat-message-window #chat-message-column-wrapper #chat-message-column .message.sent .profile-icon {
+  background: linear-gradient(to right, #ab47bc, #03a9f4); /* 從紫色漸變到藍色 */
+}
+
+/* 送出消息圖標內的文字樣式 */
+#chat-wrapper #chat-message-window #chat-message-column-wrapper #chat-message-column .message.sent .profile-icon i {
+  font-size: 1.25em; /* 圖標內文字大小設置為 1.25em */
+}
+
+/* 送出消息內容的動畫和右邊距 */
+#chat-wrapper #chat-message-window #chat-message-column-wrapper #chat-message-column .message.sent .content {
+  animation: bounceInRight 1s ease-in-out; /* 從右側彈入的動畫，持續 1 秒 */
+  animation-delay: 0.5s; /* 延遲 0.5 秒後開始動畫 */
+  margin-right: 5px; /* 右邊距調整為 5px */
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* 設置消息圖標的動畫、外觀和大小 */
+#chat-wrapper #chat-message-window #chat-message-column-wrapper #chat-message-column .message .profile-icon {
+  animation: bounceIn 1s ease-in-out; /* 彈入動畫，持續 1 秒 */
+  animation-delay: 0.25s; /* 延遲 0.25 秒後開始動畫 */
+  border-radius: 100px; /* 圖標圓角半徑為 100px，形成圓形 */
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px; /* 設置陰影效果 */
+  display: inline-block; /* 讓圖標在行內顯示 */
+  height: 50px; /* 設置圖標高度為 50px */
+  position: relative; /* 相對定位 */
+  vertical-align: top; /* 圖標頂部對齊 */
+  width: 50px; /* 設置圖標寬度為 50px */
+  z-index: 2; /* 設置圖標的層級為 2 */
+}
+
+/* 設置圖標內文字的樣式 */
+#chat-wrapper #chat-message-window #chat-message-column-wrapper #chat-message-column .message .profile-icon i {
+  color: white; /* 設置圖標內文字為白色 */
+  height: 50px; /* 圖標內部文字的高度 */
+  line-height: 50px; /* 行高與高度一致，讓文字垂直居中 */
+  text-align: center; /* 文字水平居中 */
+  width: 50px; /* 文字區域寬度 */
+}
+
+/* 設置消息內容的背景、邊距和動畫 */
+#chat-wrapper #chat-message-window #chat-message-column-wrapper #chat-message-column .message .content {
+  background-color: white; /* 設置背景顏色為白色 */
+  border-radius: 25px; /* 邊框圓角半徑為 25px */
+  box-shadow: rgba(0, 0, 0, 0.12) 0px 1px 6px, rgba(0, 0, 0, 0.12) 0px 1px 4px; /* 設置陰影效果 */
+  display: inline-block; /* 行內塊顯示 */
+  max-width: min(300px, 80vw); /* 使用較小的值：300px 或 視窗寬度的 80% */
+  padding: 15px 20px; /* 內邊距設置 */
+  position: relative; /* 相對定位 */
+  text-align: left; /* 文字靠左對齊 */
+  transition: all 0.5s; /* 所有變化過渡效果持續 0.5 秒 */
+  vertical-align: top; /* 內容頂部對齊 */
+  white-space: normal; /* 允許換行 */
+  z-index: 1; /* 設置內容的層級為 1 */
+}
+
+/* 設置消息文字的樣式 */
+#chat-wrapper #chat-message-window #chat-message-column-wrapper #chat-message-column .message .content .text {
+  color: #808080; /* 文字顏色為灰色 */
+  font-size: 1em; /* 文字大小設置為 1em */
+  font-weight: 300; /* 文字字重為 300，較輕 */
+  margin: 0px; /* 無外邊距 */
+  min-height: 20px; /* 設置最小高度為 20px */
+  transition: all 0.5s; /* 文字變化過渡效果持續 0.5 秒 */
+  word-wrap: break-word; /* 自動換行 */
+}
+
+/* 設置消息文字內 span 標籤的高度 */
+#chat-wrapper #chat-message-window #chat-message-column-wrapper #chat-message-column .message .content .text span {
+  height: 20px; /* 設置 span 的高度為 20px */
+}
+
+/* 閃爍點動畫效果 */
+@keyframes flash-dot {
+  from, to {
+    background-color: #c8c8c8; /* 從灰色開始和結束 */
+  }
+  50% {
+    background-color: rgba(200, 200, 200, 0.5); /* 在中間時變成透明度為 0.5 的灰色 */
+  }
+}
+
+/* 展開動畫 */
+@keyframes expand {
+  from {
+    max-height: 0px; /* 從高度 0 開始 */
+  }
+  to {
+    max-height: 200px; /* 最終高度設為 200px */
+  }
+}
+
+/* 彈入動畫 */
+@keyframes bounceIn {
+  from, 20%, 40%, 60%, 80%, to {
+    animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1); /* 設置彈性效果的速度曲線 */
+  }
+  0% {
+    opacity: 0; /* 初始透明度為 0 */
+    transform: scale3d(0.3, 0.3, 0.3); /* 初始縮放為 0.3 倍 */
+  }
+  20% {
+    transform: scale3d(1.1, 1.1, 1.1); /* 放大到 1.1 倍 */
+  }
+  40% {
+    transform: scale3d(0.9, 0.9, 0.9); /* 縮小到 0.9 倍 */
+  }
+  60% {
+    opacity: 1; /* 透明度變為 1，完全可見 */
+    transform: scale3d(1.03, 1.03, 1.03); /* 放大到 1.03 倍 */
+  }
+  80% {
+    transform: scale3d(0.97, 0.97, 0.97); /* 縮小到 0.97 倍 */
+  }
+  to {
+    opacity: 1; /* 最終透明度為 1 */
+    transform: scale3d(1, 1, 1); /* 最終縮放回到 1 倍 */
+  }
+}
+
+/* 從下方彈入的動畫 */
+@keyframes bounceInUp {
+  from, 60%, 75%, 90%, to {
+    animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1); /* 設置彈性效果的速度曲線 */
+  }
+  from {
+    opacity: 0; /* 初始透明度為 0 */
+    transform: translate3d(0, 3000px, 0); /* 初始位置在 Y 軸的 3000px 外 */
+  }
+  60% {
+    opacity: 1; /* 透明度變為 1 */
+    transform: translate3d(0, -20px, 0); /* Y 軸向上移動 20px */
+  }
+  75% {
+    transform: translate3d(0, 10px, 0); /* Y 軸向下移動 10px */
+  }
+  90% {
+    transform: translate3d(0, -5px, 0); /* Y 軸向上移動 5px */
+  }
+  to {
+    transform: translate3d(0, 0, 0); /* 最終位置回到原點 */
+  }
+}
+
+/* 從左側彈入的動畫 */
+@keyframes bounceInLeft {
+  from, 60%, 75%, 90%, to {
+    animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1); /* 設置彈性效果的速度曲線 */
+  }
+  0% {
+    opacity: 0; /* 初始透明度為 0 */
+    transform: translate3d(-3000px, 0, 0); /* 初始位置在 X 軸的 -3000px 外 */
+  }
+  60% {
+    opacity: 1; /* 透明度變為 1 */
+    transform: translate3d(25px, 0, 0); /* X 軸向右移動 25px */
+  }
+  75% {
+    transform: translate3d(-10px, 0, 0); /* X 軸向左移動 10px */
+  }
+  90% {
+    transform: translate3d(5px, 0, 0); /* X 軸向右移動 5px */
+  }
+  to {
+    transform: none; /* 最終回到原點 */
+  }
+}
+
+/* 從右側彈入的動畫 */
+@keyframes bounceInRight {
+  from, 60%, 75%, 90%, to {
+    animation-timing-function: cubic-bezier(0.215, 0.61, 0.355, 1); /* 設置彈性效果的速度曲線 */
+  }
+  from {
+    opacity: 0; /* 初始透明度為 0 */
+    transform: translate3d(3000px, 0, 0); /* 初始位置在 X 軸的 3000px 外 */
+  }
+  60% {
+    opacity: 1; /* 透明度變為 1 */
+    transform: translate3d(-25px, 0, 0); /* X 軸向左移動 25px */
+  }
+  75% {
+    transform: translate3d(10px, 0, 0); /* X 軸向右移動 10px */
+  }
+  90% {
+    transform: translate3d(-5px, 0, 0); /* X 軸向左移動 5px */
+  }
+  to {
+    transform: none; /* 最終回到原點 */
+  }
+}
+
+/* 向右彈出的動畫 */
+@keyframes bounceOutRight {
+  20% {
+    opacity: 1; /* 透明度保持不變 */
+    transform: translate3d(-20px, 0, 0); /* X 軸向左移動 20px */
+  }
+  to {
+    opacity: 0; /* 最終透明度變為 0 */
+    transform: translate3d(2000px, 0, 0); /* X 軸向右移動 2000px，退出畫面 */
+  }
+}
+
+/* 脈衝動畫 */
+@keyframes pulse {
+  0% {
+    box-shadow: 0px 0px 0px 0px rgba(3, 169, 244, 0.5); /* 開始時陰影為 0 */
+  }
+  100% {
+    box-shadow: 0px 0px 0px 20px rgba(3, 169, 244, 0); /* 最終陰影擴展到 20px，並逐漸變透明 */
+  }
+}
+
+/* 字母脈衝動畫 */
+@keyframes pulse-letter {
+  from, to {
+    color: #d2d2d2; /* 字母初始和最終顏色為淺灰色 */
+  }
+  50% {
+    color: #03a9f4; /* 字母在動畫中間變為亮藍色 */
+  }
+}
+
+
+
+
+
+
+
+
+
+
+/*聲音播放按鈕*/
+
+.voice-play-button {
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px;
+  width: 200px;
+  height: 30px;
+  border-radius: 8px;
+}
+
+.voice-play-button:hover {
+  background-color: #c02d2d00; /* 添加輕微的背景色變化 */
+}
+
+.voice-play-icon svg {
+  fill: #565252; /* 配合ChatGPT次要文本顏色 */
+  width: 24px;
+  height: 24px;
+}
+
+.voice-play-button:hover .voice-play-icon svg {
+  fill: #565252;; /* 鼠標懸停時顏色變深 */
+}
+
+
+
+/*語音轉文字*/
+
+#voiceSearchButton {
+  cursor: pointer; /* 鼠標懸停時顯示手形 */
+  background-color: #f1f1f102; /* 默認背景顏色 */
+  border: none; /* 移除邊框 */
+  padding: 20px; /* 添加內邊距 */
+  border-radius: 60%; /* 設置按鈕為圓形 */
+  transition: background-color 0.3s ease; /* 添加過渡效果 */
+  z-index: 100; /* 設置 z-index 以確保按鈕不會遮擋其他內容 */
+}
+
+#voiceSearchButton:hover {
+  background-color: #e1e1e1; /* 鼠標懸停時改變背景顏色 */
+}
+
+
+
+
+
+
+
+
+
+
+
+/* 載入動畫容器 */
+.loading-animation {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 20px 0;
+}
+
+/* 載入點容器 */
+.loading-dots {
+  display: flex;
+  gap: 8px;
+}
+
+/* 載入點樣式 */
+.loading-dots .dot {
+  width: 8px;
+  height: 8px;
+  background: #03a9f4;
+  border-radius: 50%;
+  animation: loading-dot 1.5s ease-in-out infinite;
+}
+
+/* 設置每個點的動畫延遲 */
+.loading-dots .dot:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.loading-dots .dot:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* 載入點動畫 */
+@keyframes loading-dot {
+  0%, 100% {
+    transform: scale(0.5);
+    opacity: 0.3;
+  }
+  50% {
+    transform: scale(1.2);
+    opacity: 1;
+  }
+}
+
+/* 響應式設計 - 小屏幕調整 */
+@media (max-width: 790px) {
+  /* 調整輸入區域的包裝元素 */
+  #chat-wrapper #chat-message-window #message-input-wrapper {
+    position: fixed; /* 固定定位，不隨內容滾動 */
+    bottom: 20px; /* 距離底部20px */
+    left: 0;
+    width: 100%;
+    height: auto; /* 高度自適應內容 */
+    display: flex;
+    justify-content: center; /* 水平居中 */
+    align-items: center; /* 垂直居中 */
+    z-index: 10; /* 確保顯示在最上層 */
+    padding: 0 1px; /* 左右各留10px間距 */
+  }
+
+  /* 調整輸入框本身 */
+  #chat-wrapper #chat-message-window #message-input-wrapper #message-input {
+    position: relative; /* 改為相對定位 */
+    left: auto; /* 取消左側定位 */
+    top: auto; /* 取消頂部定位 */
+    transform: none; /* 取消變換 */
+    width: 90%; /* 寬度為容器的90% */
+    max-width: 450px; /* 最大寬度限制 */
+    margin: 0 auto; /* 水平居中 */
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2); /* 增強陰影效果 */
+    transition: all 0.3s ease; /* 平滑過渡效果 */
+  }
+
+  /* 調整消息列以適應固定定位的輸入框 */
+  #chat-wrapper #chat-message-window #chat-message-column-wrapper #chat-message-column {
+    padding-bottom: 95px; /* 為固定定位的輸入框預留空間 */
+    margin-bottom: 0; /* 重置底部邊距 */
+  }
+
+  /* 調整輸入框內的文本輸入字段 */
+  #chat-wrapper #chat-message-window #message-input-wrapper #message-input #message-input-field {
+    width: calc(100% - 80px); /* 適應按鈕空間，增加空間防止文字超過按鈕 */
+    font-size: 16px; /* 移動設備上更適合的字體大小 */
+    padding: 0 10px; /* 增加些許內邊距 */
+  }
+
+  /* 調整發送按鈕位置 */
+  #chat-wrapper #chat-message-window #message-input-wrapper #message-input #send-message-button {
+    right: 5px; /* 輕微調整右側位置 */
+  }
+
+  /* 調整聊天消息內容的文字換行樣式 */
+  #chat-wrapper #chat-message-window #chat-message-column-wrapper #chat-message-column .message .content .text {
+    word-break: break-all; /* 在任何字符處換行 */
+    width: max-content; /* 使寬度由內容決定 */
+    max-width: 17ch; /* 限制最大寬度為17個字符 */
+    white-space: normal; /* 自動換行 */
+    overflow-wrap: break-word; /* 保證長單詞也能換行 */
+  }
+  
+  /* 調整消息內容容器的最大寬度 */
+  #chat-wrapper #chat-message-window #chat-message-column-wrapper #chat-message-column .message .content {
+    max-width: 17ch; /* 限制最大寬度為17個字符 */
+    padding: 12px 15px; /* 減小內邊距使文字有更多空間 */
+  }
+  
+  /* 調整輸入框大小 */
+  #chat-wrapper #chat-message-window #message-input-wrapper #message-input {
+    width: 85%;
+    max-width: 85vw;
+  }
+  
+  /* 調整輸入框內的文字輸入區域寬度 */
+  #chat-wrapper #chat-message-window #message-input-wrapper #message-input #message-input-field {
+    width: calc(100% - 70px); /* 減去按鈕佔用的空間 */
+  }
+  
+  /* 調整字母池和字母覆蓋層的背景大小和位置 */
+  #chat-wrapper #letter-pool, #chat-wrapper #temp-letter-pool, #chat-wrapper #letter-overlay {
+    background-size: cover; /* 確保背景覆蓋整個容器 */
+    background-position: center center; /* 背景居中 */
+    width: 100%; /* 使用百分比寬度 */
+    height: 100%; /* 使用百分比高度 */
+    transform: translateZ(0); /* 啟用硬體加速，提高性能 */
+    will-change: transform; /* 優化動畫性能 */
+  }
+}
+
+@media (max-width: 480px) {
+  /* 進一步調整更小屏幕的布局 */
+  #chat-wrapper #chat-message-window #message-input-wrapper #message-input {
+    width: 80%;
+    max-width: 80vw;
+  }
+  
+  /* 調整輸入框內的文本輸入字段在極小屏幕上的寬度 */
+  #chat-wrapper #chat-message-window #message-input-wrapper #message-input #message-input-field {
+    width: calc(100% - 100px); /* 極小屏幕上需要更多空間 */
+    font-size: 14px; /* 稍微縮小字體以適應更小的空間 */
+  }
+  
+  /* 調整消息內容在極小屏幕上的顯示 */
+  #chat-wrapper #chat-message-window #chat-message-column-wrapper #chat-message-column .message .content {
+    max-width: 85vw;
+    padding: 10px 12px;
+  }
+  
+  /* 調整頭像大小 */
+  #chat-wrapper #chat-message-window #chat-message-column-wrapper #chat-message-column .message .profile-icon {
+    height: 40px;
+    width: 40px;
+  }
+  
+  /* 調整頭像內文字 */
+  #chat-wrapper #chat-message-window #chat-message-column-wrapper #chat-message-column .message .profile-icon i {
+    height: 40px;
+    line-height: 40px;
+    width: 40px;
+  }
+}
+
+/* 專門針對430*932及類似尺寸的屏幕調整發送訊息的顯示 */
+@media (max-width: 430px) {
+  /* 確保發送訊息在顯示框內正確顯示 */
+  #chat-wrapper #chat-message-window #chat-message-column-wrapper #chat-message-column .message.sent {
+    text-align: right; /* 保持右對齊 */
+    /*padding-right: 20px;  添加右側內邊距 */
+    max-width: 90%; /* 限制最大寬度 */
+    box-sizing: border-box; /* 確保padding計算在寬度內 */
+    margin-left: auto; /* 自動左邊距，保持右對齊 */
+    /*margin-right: 20px;  微調右邊距 */
+  }
+
+  /* 調整發送訊息的內容容器 */
+  #chat-wrapper #chat-message-window #chat-message-column-wrapper #chat-message-column .message.sent .content {
+    max-width: 75vw; /* 限制最大寬度為視窗寬度的75% */
+   /* margin-right: 10px;  保持右邊距，但略微減少 */
+    box-sizing: border-box; /* 確保盒模型計算包含邊距 */
+    word-break: break-word; /* 允許在任何字符處斷行 */
+    white-space: normal; /* 確保文字正常換行 */
+  }
+
+  /* 調整收到的訊息，保持左邊距 */
+  #chat-wrapper #chat-message-window #chat-message-column-wrapper #chat-message-column .message.received .content {
+    margin-left: 20px; /* 維持原有左邊距 */
+    max-width: 75vw; /* 限制最大寬度 */
+  }
+  
+  /* 430px螢幕下特別調整輸入框寬度 */
+  #chat-wrapper #chat-message-window #message-input-wrapper #message-input #message-input-field {
+    width: calc(100% - 110px); /* 430px寬度下，需要更多空間避免文字超出 */
+    font-size: 14px; /* 減小字體大小 */
+    margin-left: 10px; /* 減少左邊距 */
+  }
+}
+
+/* 全局響應式設計 - 確保所有元素隨顯示框尺寸縮放
+* {
+  box-sizing: border-box; 
+  max-width: 100%; 
+}
+ */
+/* 圖像和多媒體元素響應式縮放 
+img, svg, video, canvas, audio, iframe, embed, object {
+  display: block;
+  max-width: 100%;
+  height: auto; 
+}
+*/
+
+
+/* 添加滿版背景相關樣式 */
+#background-container {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  z-index: -1; /* 置於內容後方 */
+  overflow: hidden;
+  background-size: cover; /* 確保背景覆蓋整個容器 */
+  background-position: center center; /* 背景居中 */
+}
+
+/* 確保任何動畫和特效元素都能滿版顯示 */
+.background-effect {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  pointer-events: none; /* 不干擾用戶交互 */
+  z-index: 0; /* 放在內容下方但在背景上方 */
+  background-size: cover; /* 確保背景覆蓋整個容器 */
+  background-position: center center; /* 背景居中 */
+}
+
+/* 針對610px以下的螢幕添加特殊背景處理 */
+@media (max-width: 610px) {
+  /* 調整字母池背景以適應小螢幕 */
+  #chat-wrapper #letter-pool, 
+  #chat-wrapper #temp-letter-pool {
+    width: 100%; /* 使用百分比而非視窗單位 */
+    height: 100%; /* 使用百分比而非視窗單位 */
+    min-width: 320px; /* 設置最小寬度確保內容不會太小 */
+    min-height: 480px; /* 設置最小高度確保內容不會太小 */
+    background-size: contain; /* 使背景完全顯示 */
+    background-position: center; /* 背景置中 */
+    transform: scale(1); /* 確保不會被縮放 */
+  }
+  
+  /* 調整字母覆蓋層以跟隨螢幕尺寸 */
+  #chat-wrapper #letter-overlay {
+    width: 100%; /* 使用百分比而非視窗單位 */
+    height: 100%; /* 使用百分比而非視窗單位 */
+    min-width: 320px; /* 設置最小寬度 */
+    min-height: 480px; /* 設置最小高度 */
+    transform-origin: center center; /* 設置變換原點在中心 */
+  }
+  
+  /* 調整字母位置計算，確保其在小螢幕上正確顯示 */
+  #chat-wrapper #letter-pool .pool-letter, 
+  #chat-wrapper #letter-pool .temp-letter, 
+  #chat-wrapper #temp-letter-pool .pool-letter, 
+  #chat-wrapper #temp-letter-pool .temp-letter,
+  #chat-wrapper #letter-overlay .overlay-letter {
+    transform-origin: center center; /* 設置變換原點在中心 */
+    transform: scale(0.9); /* 稍微縮小字母大小 */
+  }
+}
+
+/* 針對500px以下螢幕調整用戶圖標(far fa-user)位置 */
+@media (max-width: 500px) {
+  /* 調整發送消息的用戶圖標位置 */
+  #chat-wrapper #chat-message-window #chat-message-column-wrapper #chat-message-column .message.sent .profile-icon {
+    margin-right: 10px; /* 增加右側邊距 */
+    position: relative; /* 確保相對定位 */
+    right: 8px; /* 向左移動圖標 */
+  }
+  
+  /* 調整發送消息內容的邊距，保持整體布局平衡 */
+  #chat-wrapper #chat-message-window #chat-message-column-wrapper #chat-message-column .message.sent .content {
+    margin-right: 15px; /* 減少右邊距，避免擠壓 */
+  }
+}
+
+/* 針對更小螢幕(400px以下)進一步調整用戶圖標位置 */
+@media (max-width: 400px) {
+  #chat-wrapper #chat-message-window #chat-message-column-wrapper #chat-message-column .message.sent .profile-icon {
+    margin-right: 10px; /* 增加右側邊距 */
+    position: relative; /* 確保相對定位 */
+    right: 8px; /* 向左移動圖標 */
+  }
+  
+  
+  #chat-wrapper #chat-message-window #chat-message-column-wrapper #chat-message-column .message.sent .content {
+    margin-right: 15px; /* 減少右邊距，避免擠壓 */
+  }
+}
+
+/* 針對極小螢幕(350px以下)的調整 */
+@media (max-width: 350px) {
+  #chat-wrapper #chat-message-window #chat-message-column-wrapper #chat-message-column .message.sent .profile-icon {
+    margin-right: 10px; /* 增加右側邊距 */
+    position: relative; /* 確保相對定位 */
+    right: 8px; /* 向左移動圖標 */
+  }
+  
+  #chat-wrapper #chat-message-window #chat-message-column-wrapper #chat-message-column .message.sent .content {
+    margin-right: 15px; /* 減少右邊距，避免擠壓 */
+  }
+}
+
+/* 針對大屏幕(寬度大於500px)調整用戶圖標和內容之間的間距 */
+@media (min-width: 501px) {
+  /* 調整發送消息的用戶圖標與內容之間的間距 */
+  #chat-wrapper #chat-message-window #chat-message-column-wrapper #chat-message-column .message.sent .profile-icon {
+    margin-left: 25px; /* 增加圖標與內容之間的間距 */
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

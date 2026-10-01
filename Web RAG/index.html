@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <link rel="shortcut icon" type="image/x-icon" href="ic.png">
+    <title>亞洲大學資訊傳播學系小助手</title>
+    <link rel="stylesheet" href="chat.css">
+    <link href="https://fonts.googleapis.com/css2?family=Rajdhani:wght@300;400;500;600&family=Orbitron:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+        }
+        
+        .main-container {
+            width: 100%;
+            max-width: 100vw;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            position: relative;
+        }
+        
+        /* 初始隱藏元素 */
+        .voice-orb, .tech-circle, .tech-lines, .voice-button, .tech-readout, .text-mode-button {
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+        
+        /* 添加更多科技圓環 */
+        .tech-circle-outer {
+            position: absolute;
+            width: 70vmin;
+            height: 70vmin;
+            border-radius: 50%;
+            border: 1px dashed rgba(64, 128, 255, 0.1);
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 0;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #0a0a18;
+            z-index: 9999;
+            transition: opacity 1s ease;
+        }
+        
+        .loading-spinner {
+            width: 8vmin;
+            height: 8vmin;
+            border: 0.4vmin solid transparent;
+            border-top: 0.4vmin solid #4080ff;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* 響應式樣式 */
+        @media screen and (max-width: 768px) {
+            .tech-readout {
+                font-size: 0.8em;
+            }
+        }
+        
+        @media screen and (max-width: 480px) {
+            .tech-readout {
+                font-size: 0.7em;
+            }
+        }
+
+        /* 文字模式按鈕樣式 */
+        .text-mode-button {
+            width: 60px;
+            height: 60px;
+            
+            border-radius: 50%;
+            background: linear-gradient(145deg, #3070ee, #2050cc);
+            border: none;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 10;
+            box-shadow: 
+                0 0 0 0.4vmin rgba(32, 80, 200, 0.3),
+                0 0.4vmin 1.5vmin rgba(0, 0, 0, 0.4),
+                0 0 3vmin rgba(64, 128, 255, 0.6),
+                inset 0 0 2vmin rgba(255, 255, 255, 0.2);
+            position: absolute;
+            left: calc(50% + 10vmin); /* 調整位置到voice-button右側，保持10vmin的間距 */
+            top: calc(50% + 14vmin); /* 往下移動14vmin */
+            transform: translate(-50%, -50%);
+            transition: all 0.3s cubic-bezier(0.2, 0.8, 0.2, 1.0);
+            overflow: hidden;
+        }
+        
+        /* 小屏幕上的按鈕位置調整 */
+        @media screen and (max-width: 790px) {
+            .text-mode-button {
+                left: calc(50% + 18vmin); /* 增加水平間距 */
+                top: calc(50% + 20vmin); /* 增加垂直間距 */
+            }
+        }
+        
+        @media screen and (max-width: 480px) {
+            .text-mode-button {
+                left: calc(50% + 22vmin); /* 進一步增加水平間距 */
+                top: calc(50% + 25vmin); /* 進一步增加垂直間距 */
+            }
+        }
+
+        .text-mode-button::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.8), transparent 60%);
+            opacity: 0.4;
+            z-index: 2;
+            transition: opacity 0.3s ease;
+        }
+
+        .text-mode-button::after {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            top: -50%;
+            left: -50%;
+            background: radial-gradient(circle, transparent 30%, rgba(64, 128, 255, 0.1), transparent 70%);
+            animation: rotate 10s linear infinite;
+            z-index: 1;
+        }
+
+        .text-mode-button:hover {
+            transform: translate(-50%, -50%) scale(1.05) translateY(-2px);
+            box-shadow: 
+                0 0 0 4px rgba(32, 80, 200, 0.3),
+                0 8px 25px rgba(0, 0, 0, 0.5),
+                0 0 40px rgba(64, 128, 255, 0.8),
+                inset 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+
+        .text-mode-button:hover::before {
+            opacity: 0.6;
+        }
+
+        .text-mode-button:active, .text-mode-button.button-press {
+            transform: translate(-50%, -50%) scale(0.92);
+            box-shadow: 
+                0 0 0 3px rgba(32, 80, 200, 0.3),
+                0 2px 5px rgba(0, 0, 0, 0.4),
+                0 0 20px rgba(64, 128, 255, 0.6),
+                inset 0 0 15px rgba(255, 255, 255, 0.1);
+            background: linear-gradient(145deg, #2060dd, #1040aa);
+            transition: all 0.1s cubic-bezier(0.4, 0.0, 0.2, 1.0);
+        }
+
+        .text-mode-button svg {
+            width: 32px;
+            height: 32px;
+            z-index: 3;
+            filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
+            transition: transform 0.3s ease;
+        }
+
+        .text-mode-button:hover svg {
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-overlay">
+        <div class="loading-spinner"></div>
+    </div>
+    
+    <div class="glitch-effect"></div>
+    
+    <div class="main-container">
+        <div class="voice-container">
+            <!-- 科技感裝飾元素 -->
+            <div class="tech-circle"></div>
+            <div class="tech-circle-outer"></div>
+            <div class="tech-lines"></div>
+            
+            <!-- 中央動態圓球 -->
+            <div class="voice-orb">
+                <div class="orb-inner">
+                    <!-- 圖像將由JS動態添加 -->
+                </div>
+                <div class="orb-waves">
+                    <div class="wave wave-1"></div>
+                    <div class="wave wave-2"></div>
+                    <div class="wave wave-3"></div>
+                </div>
+            </div>
+            
+            <!-- 語音按鈕 -->
+            <button class="voice-button">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z" fill="currentColor"></path>
+                    <path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z" fill="currentColor"></path>
+                </svg>
+            </button>
+            
+            <!-- 切換到文字模式按鈕 -->
+            <button class="text-mode-button" id="textModeBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-pencil-square" viewBox="0 0 16 16">
+                    <path d="M15.502 1.94a.5.5 0 0 1 0 .706L14.459 3.69l-2-2L13.502.646a.5.5 0 0 1 .707 0l1.293 1.293zm-1.75 2.456-2-2L4.939 9.21a.5.5 0 0 0-.121.196l-.805 2.414a.25.25 0 0 0 .316.316l2.414-.805a.5.5 0 0 0 .196-.12l6.813-6.814z"/>
+                    <path fill-rule="evenodd" d="M1 13.5A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-6a.5.5 0 0 0-1 0v6a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-11a.5.5 0 0 1 .5-.5H9a.5.5 0 0 0 0-1H2.5A1.5 1.5 0 0 0 1 2.5z"/>
+                </svg>
+            </button>
+            
+            <!-- 文字消息顯示區域 -->
+            <div class="message-display">
+                <div class="user-message"></div>
+                <div class="assistant-message"></div>
+            </div>
+            
+            <!-- 科技感文字顯示 -->
+            <div class="tech-readout">
+                <div class="tech-readout-header">系統資訊</div><div class="tech-readout-content">
+                    <div class="tech-readout-status">資料連接</div>
+                    <div class="tech-readout-data">資料更新時間</div>
+                </div>
+            </div>
+            
+            <!-- 添加調試信息區域 -->
+            <div class="debug-info" style="position: absolute; bottom: 10px; left: 10px; font-size: 12px; color: rgba(255,255,255,0.5);"></div>
+        </div>
+    </div>
+    
+    <script src="chat.JS"></script>
+    <script>
+        // 頁面載入完成後移除載入畫面
+        window.addEventListener('load', function() {
+            setTimeout(function() {
+                document.querySelector('.loading-overlay').style.opacity = '0';
+                setTimeout(function() {
+                    document.querySelector('.loading-overlay').style.display = 'none';
+                }, 1000);
+            }, 1500);
+            
+            // 元素顯示動畫
+            setTimeout(function() {
+                document.querySelector('.voice-orb').style.opacity = '1';
+                document.querySelector('.tech-circle').style.opacity = '1';
+                document.querySelector('.tech-circle-outer').style.opacity = '1';
+                document.querySelector('.tech-lines').style.opacity = '1';
+                
+                setTimeout(function() {
+                    document.querySelector('.voice-button').style.opacity = '1';
+                    
+                    // 確保text-mode-button顯示，無論屏幕尺寸如何
+                    var textModeBtn = document.querySelector('.text-mode-button');
+                    if (textModeBtn) {
+                        textModeBtn.style.opacity = '1';
+                        textModeBtn.style.display = 'flex';
+                        textModeBtn.style.visibility = 'visible';
+                    }
+                    
+                    setTimeout(function() {
+                        document.querySelector('.tech-readout').style.opacity = '1';
+                    }, 300);
+                }, 300);
+            }, 2000);
+            
+            // 添加文字模式按鈕的點擊事件處理 - 使用高性能方式
+            const textModeButton = document.getElementById('textModeBtn');
+            if (textModeButton) {
+                // 添加事件監聽器，使用事件捕獲以提高響應速度
+                textModeButton.addEventListener('click', function(e) {
+                    e.preventDefault(); // 防止默認行為
+                    // 使用更高效的導航方式
+                    window.location.replace('index2.html');
+                }, { passive: false, capture: true });
+                
+                // 添加按鈕效果
+                textModeButton.addEventListener('mousedown', function() {
+                    this.classList.add('button-press');
+                });
+                
+                textModeButton.addEventListener('mouseup', function() {
+                    this.classList.remove('button-press');
+                });
+                
+                textModeButton.addEventListener('mouseleave', function() {
+                    this.classList.remove('button-press');
+                });
+                
+                // 添加觸摸事件支援
+                textModeButton.addEventListener('touchstart', function(e) {
+                    e.preventDefault();
+                    this.classList.add('button-press');
+                });
+                
+                textModeButton.addEventListener('touchend', function() {
+                    this.classList.remove('button-press');
+                    // 在觸摸結束時導航到index2.html
+                    window.location.replace('index2.html');
+                });
+            }
+            
+            // 技術清單下拉功能
+            const techReadout = document.querySelector('.tech-readout');
+            if (techReadout) {
+                // 點擊 tech-readout 時切換展開狀態
+                techReadout.addEventListener('click', function(event) {
+                    event.stopPropagation(); // 防止點擊事件冒泡到 document
+                    this.classList.toggle('expanded');
+                });
+
+                // 點擊文檔其他地方時關閉下拉選單
+                document.addEventListener('click', function() {
+                    techReadout.classList.remove('expanded');
+                });
+            }
+            
+            // 監聽屏幕寬度變化，根據尺寸調整文字大小
+            function adjustTechReadoutSize() {
+                const techReadoutStatus = document.querySelector('.tech-readout-status');
+                const techReadoutData = document.querySelector('.tech-readout-data');
+                const techReadoutHeader = document.querySelector('.tech-readout-header');
+                
+                if (window.innerWidth <= 360) {
+                    techReadout.style.fontSize = 'calc(9px + 0.3vmin)';
+                    techReadoutHeader.style.fontSize = 'calc(10px + 0.3vmin)';
+                    techReadoutStatus.style.fontSize = 'calc(8px + 0.3vmin)';
+                    techReadoutData.style.fontSize = 'calc(8px + 0.3vmin)';
+                } else if (window.innerWidth <= 480) {
+                    techReadout.style.fontSize = 'calc(10px + 0.3vmin)';
+                    techReadoutHeader.style.fontSize = 'calc(11px + 0.3vmin)';
+                    techReadoutStatus.style.fontSize = 'calc(9px + 0.3vmin)';
+                    techReadoutData.style.fontSize = 'calc(9px + 0.3vmin)';
+                } else if (window.innerWidth <= 790) {
+                    techReadout.style.fontSize = 'calc(12px + 0.5vmin)';
+                    techReadoutHeader.style.fontSize = 'calc(12px + 0.5vmin)';
+                    techReadoutStatus.style.fontSize = 'calc(10px + 0.5vmin)';
+                    techReadoutData.style.fontSize = 'calc(10px + 0.5vmin)';
+                } else {
+                    techReadout.style.fontSize = '16px';
+                    techReadoutHeader.style.fontSize = '16px';
+                    techReadoutStatus.style.fontSize = '16px';
+                    techReadoutData.style.fontSize = '16px';
+                }
+            }
+            
+            // 初始調整
+            adjustTechReadoutSize();
+            
+            // 監聽窗口大小變化
+            window.addEventListener('resize', adjustTechReadoutSize);
+        });
+    </script>
+</body>
+</html> 

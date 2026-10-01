@@ -1,0 +1,93 @@
+<!DOCTYPE html> 
+<html lang="en">
+<head> 
+  <meta charset="UTF-8"> <!-- 設定字符編碼為UTF-8 -->
+  <meta http-equiv="X-UA-Compatible" content="IE=edge"> <!-- 指示瀏覽器使用最新的渲染方式 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="shortcut icon" type="image/x-icon" href="ic.png"><!--設定網頁標籤圖片-->
+  <title>亞洲大學資訊傳播學系智能小助理</title> <!-- 頁面標題 -->
+  <link rel='stylesheet' href='https://use.fontawesome.com/releases/v5.0.1/css/all.css'> <!-- 載入FontAwesome圖標庫 -->
+  <link rel="stylesheet" href="./style.css"> <!-- 載入css -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=2.0, user-scalable=yes" /> 
+
+</head> 
+
+
+
+<body> 
+<!-- partial:index.partial.html --> <!-- 包含部分文件 -->
+<div id="chat-wrapper"> <!-- 定義聊天包裹區域 -->
+ 
+  <div id="chat-bot-mood"> <!-- 定義聊天機器人情緒區域 -->
+    <div id="chat-bot-mood-icon"></div> <!-- 定義情緒圖標 -->
+  <div id="chat-bot-mood-label">  <!-- 定義情緒標籤區域 --> 
+     <h1 id="chat-bot-mood-text">資傳線上助理</h1> <!-- 定義顯示的情緒文本 -->
+     <h1 id="chat-bot-mood-value">Mood</h1> <!-- 定義顯示聊天的情緒初始值 -->
+    </div>
+  </div>
+  <div id="letter-pool"></div> <!-- 定義字母池區域 -->
+  <div id="temp-letter-pool"></div> <!-- 定義臨時字母池區域 -->
+  <div id="letter-overlay"></div> <!-- 定義字母覆蓋區域 -->
+  <div id="chat-message-window"> <!-- 定義聊天訊息窗口 -->
+
+    <div id="message-input-wrapper"> <!-- 定義訊息輸入包裹區域 -->
+         <div id="message-input" style="display: flex; align-items: center;"> <!-- 定義訊息輸入區域 -->
+           <!--語音轉文字-->
+     <button id="voiceSearchButton" class="searchbox-icon-button" title="語音轉文字">
+      <i class="fas fa-microphone"></i> <!-- 使用 FontAwesome 的麥克風圖標 -->
+    </button>
+         <input id="message-input-field" type="text" placeholder="傳送信息給資傳小幫手" maxlength="10000"/> <!-- 定義訊息輸入欄 -->
+        <div id="send-message-button"><i class="far fa-arrow-alt-circle-right"></i></div> <!-- 定義發送訊息按鈕 -->
+        <div id="speech-to-text-button"><i class="bi bi-mic-left"></i></div> <!-- 定義語音翻譯文字 -->
+      </div>
+    </div>
+    <div class="scroll-bar" id="chat-message-column-wrapper"> <!-- 定義聊天訊息列包裹區域，帶滾動條 -->
+      <div class="static" id="chat-message-column"></div> <!-- 定義聊天訊息列 -->
+    </div>
+  </div>
+</div>
+
+
+
+
+
+
+<script>
+  //語音轉文字
+  const startStopButton = document.getElementById('voiceSearchButton');
+  const resultDiv = document.getElementById('message-input-field');
+  
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const recognition = new SpeechRecognition();
+  recognition.interimResults = true;
+  recognition.continuous = true;
+  let listening = false;
+  
+  recognition.onresult = (event) => {
+      let transcript = '';
+      for (let i = event.resultIndex; i < event.results.length; i++) {
+          transcript += event.results[i][0].transcript;
+      }
+      resultDiv.value = transcript; // 將文字顯示在輸入欄位中
+  };
+  
+  recognition.onerror = (event) => {
+      console.error("Speech recognition error", event);
+  };
+  
+  recognition.onend = () => {
+      listening = false;
+      startStopButton.innerHTML = '<i class="fas fa-microphone"></i>'; // 停止後顯示麥克風圖標
+  };
+  
+  startStopButton.addEventListener('click', () => {
+      window.location.href = 'index.html';
+  });
+  
+</script>
+
+<script src='https://codepen.io/Hyperplexed/pen/QOvrzd/0299c8b36352c72cbfe8df48b47b54ca.js'></script> <!-- 載入外部JavaScript文件 -->
+<script src='https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.min.js'></script> <!-- 載入Lodash庫 -->
+<script src="./script.js"></script> <!-- 載入JS文件 -->
+</body> 
+</html> 
