@@ -6,9 +6,13 @@
 
 
 硬體配置：
+
 電腦系統：windows 11企業版
+
 GUP：RTX 4060 TI
+
 CPU：intel i9 14700k
+
 記憶體：16GB
 
 
