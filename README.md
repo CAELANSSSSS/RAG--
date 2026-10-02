@@ -1,5 +1,5 @@
 # RAG--
-項目：檢索增強生成系統本地部署大模型之企業應用服務，已台灣亞洲大學資訊傳播學習為例
+項目：檢索增強生成系統本地部署大模型之企業應用服務，以台灣亞洲大學資訊傳播學習為例
 
 系統架構：
 <img width="1087" height="772" alt="image" src="https://github.com/user-attachments/assets/3367e66e-d257-43e3-83dd-9b778e684505" />
